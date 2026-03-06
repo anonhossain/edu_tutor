@@ -1,0 +1,508 @@
+
+
+===== START OF notes.pdf =====
+
+Slide 1 
+Defining Big Data 
+Extremely large datasets that are complex and difficult to manage using traditional tools 
+5 V's of Big Data:  
+Volume  
+Velocity  
+Variety  
+Veracity  
+Value 
+ 
+Difference between Data, Statistics, and Analytics 
+Data: Raw observations (e.g., sales numbers) v Statistics: Summarizing and describing 
+data (e.g., average sales) v Analytics: Drawing insights, making predictions (e.g., future 
+demand forecasting 
+ 
+Data Types 
+Structured Data: Organized into rows/columns (e.g., databases)  
+Unstructured Data: Free-form text, images, audio  
+Semi-structured Data: Has some organizational properties (e.g., JSON, XML)  
+Metadata: Data about data 
+ 
+ASCII and Unicode 
+ASCII: Uses 7-bit encoding, supports 128 characters  
+Suitable for English text  
+Unicode: Universal character encoding standard  
+Supports characters from most world languages  
+Variants: UTF-8, UTF-16 
+Slide 2 
+DIKW Pyramid 
+Data: Raw symbols or facts (e.g., numbers, words)  
+Information: Data given meaning through context  
+Knowledge: Application of information to answer "how"  
+Wisdom: Understanding of “why” and making informed decisions 
+ 
+Data Flows and Data Diagrams 
+ 
+ 
+ 
+ 
+Slide 3 
+What Are Linear Data Structures? 
+Linear data structures are types of data arrangements in which elements are organized 
+sequentially — one after another — so that each element is connected to its previous and next 
+element (except the first and last ones).  
+In this structure, data items are stored in a linear order, and they can be traversed sequentially, 
+making the access pattern predictable and straightforward. 
+Types of linear data structures: 
+• 
+Arrays 
+• 
+Linked Lists 
+• 
+Stacks 
+• 
+Queues 
+Definition: An array is a collection of elements stored in contiguous memory locations, where 
+each element can be directly accessed using an index. 
+• 
+Advantages:  
+• 
+Simple and easy to use.  
+• 
+Fast access to elements using the index (constant time, O(1)).  
+• 
+Useful for static data storage where the size is known beforehand.  
+• 
+Efficient for reading and iterating through elements. 
+• 
+Disadvantages:  
+• 
+Fixed size — cannot grow or shrink dynamically.  
+• 
+Insertion and deletion are costly (require shifting elements).  
+• 
+Memory wastage if array size is overestimated.  
+ 
+Inefficient for searching for unsorted data (O(n) time). 
+Linked List 
+Definition: A linked list is a collection of nodes, where each node contains data and a reference 
+(pointer) to the next node. (Types: Singly Linked List, Doubly Linked List, Circular Linked List). 
+Advantages:  
+• 
+Dynamic in size — can easily grow or shrink at runtime.  
+• 
+Efficient insertion and deletion (no shifting required).  
+• 
+Memory utilization is optimized; no pre-allocation required. 
+Disadvantages:  
+• 
+Sequential access only (no direct indexing).  
+• 
+Requires extra memory for storing pointers.  
+• 
+More complex to implement and manage.  
+• 
+Reverse traversal is difficult in singly linked lists. 
+ 
+Stack 
+Definition: A stack is a LIFO (Last In, First Out) structure where insertion and deletion occur 
+only at one end called the “top.” 
+Advantages:  
+• 
+Simple and easy to implement using arrays or linked lists.  
+• 
+Provides control over data access (only top element). 
+• 
+Useful in recursion, expression evaluation, and backtracking.  
+• 
+Memory efficient — follows a predictable access pattern. 
+Disadvantages:  
+• 
+Limited access (only top element can be accessed). 
+• 
+Fixed size if implemented using arrays.  
+• 
+Overflow and underflow conditions may occur. 
+ 
+Queue 
+Definition: A queue is a FIFO (First In, First Out) structure where insertion occurs at the rear and 
+deletion at the front. 
+Advantages:  
+• 
+Maintains order of processing (first come, first served). 
+• 
+Ideal for scheduling and resource allocation.  
+• 
+Prevents data loss by maintaining a waiting line mechanism. 
+Disadvantages:  
+• 
+Random access not possible.  
+• 
+Fixed size if implemented using arrays.  
+• 
+May become full (overflow) even if space is available (in simple queue). 
+ 
+What Are Tree Structures? 
+A Tree Structure is a non-linear data structure that organizes data in a hierarchical form, like an 
+inverted tree in nature — starting from a single root node and expanding into branches (edges) that 
+connect to child nodes. 
+Basic Concepts of Tree Structures 
+• 
+Root Node: The topmost node in the tree (has no parent). 
+• 
+Child Node:A node that descends from another node.  
+• 
+Parent Node: A node that has one or more child nodes. 
+• 
+Leaf Node: A node with no children. 
+• 
+Edge: The link between a parent and a child node.  
+• 
+Level: The depth of a node in the tree (root is at level 0).  
+• 
+Subtree: Any node and all its descendants form a subtree. 
+ 
+Types of Tree Structures 
+• 
+General Tree: Each node can have any number of children. 
+• 
+Binary Tree: Each node has at most two children (left and right). 
+• 
+Binary Search Tree (BST): A binary tree where the left child < parent < right child. 
+• 
+Balanced Tree (e.g., AVL, Red-Black Tree): A binary tree that maintains balanced height 
+for efficiency. 
+• 
+Heap: A complete binary tree used for priority operations. 
+• 
+Trie (Prefix Tree):Used for storing strings efficiently (like in autocomplete). 
+ 
+What Are Index and Pointer Structures? 
+Index and Pointer structures are two important data organization techniques used to manage data 
+efficiently in memory or storage.  
+They help in fast data access, retrieval, and linking between data elements. 
+• 
+Used in: 
+• 
+File systems 
+• 
+Databases 
+• 
+Graphs 
+• 
+Memory allocation 
+Index Structure 
+An Index is a data structure that improves the speed of data retrieval operations on a database, 
+array, or file by maintaining a separate list (index) of key values and their corresponding memory 
+or record locations. 
+Think of an index like the index of a book — it lists keywords (topics) along with the page 
+numbers where you can find them. 
+Common Index Structures 
+• 
+B-Tree / B+ Tree Index – used in databases for ordered data retrieval. 
+• 
+Hash Index – uses hash functions for fast equality searches. 
+• 
+Inverted Index – used in search engines for keyword-based retrieval. 
+Advantages 
+• 
+Fast search, retrieval, and sorting. 
+• 
+Reduces disk access in large databases. 
+• 
+Efficient range queries (e.g., finding values between 100–200). 
+Disadvantages 
+• 
+Requires extra memory or disk space. 
+• 
+Needs updating whenever data changes. 
+• 
+Overhead during insertion and deletion. 
+ 
+ 
+ 
+Pointer Structure 
+A Pointer is a variable that stores the address (location) of another variable, record, or node in 
+memory.  
+In data structures, pointers are used to link elements dynamically, enabling non-contiguous 
+memory storage. 
+Imagine a chain — each link (node) knows where the next one is located through a pointer. 
+Common Uses of Pointers 
+• 
+Linked Lists (Singly, Doubly, Circular) 
+• 
+Trees (pointers to left and right child) 
+• 
+Graphs (adjacency representation) 
+• 
+Dynamic Memory Allocation (malloc, new) 
+Advantages 
+• 
+Efficient dynamic memory use. 
+• 
+Enables creation of flexible and complex structures (lists, trees, graphs). 
+• 
+Supports non-contiguous data storage. 
+Disadvantages 
+• 
+Increases program complexity. 
+• 
+Pointer errors (dangling or null pointers) can cause crashes. 
+• 
+Harder to debug. 
+ 
+Slide 4 
+ Population 
+Population refers to the entire set of data points or observations that a data scientist aims to 
+analyze or draw conclusions about. 
+It represents the complete group that possesses one or more characteristics of interest.  
+It can be finite or infinite. 
+• 
+Example:  
+• 
+All customer transactions of an e-commerce company in 2025. 
+• 
+All students in a university 
+• 
+All users of an app 
+ 
+ 
+ 
+All possible outcomes of a dice roll 
+ 
+ 
+Sample 
+• 
+A sample is a subset of the population selected for analysis and modeling. 
+• 
+It represents the population when it’s impractical or expensive to collect all data. 
+• 
+Sampling allows data scientists to make inferences, train models, and validate hypotheses 
+efficiently. 
+• 
+Example: Selecting 5,000 customer reviews from 5 million total reviews on Amazon. 
+ 
+What is Statistical Modeling 
+Statistical Modeling is the process of using mathematical equations to represent real-world data 
+relationships. 
+It helps data scientists to understand patterns, make predictions, and draw conclusions from data. 
+A model expresses how a dependent variable (output) changes with one or more independent 
+variables (inputs). 
+• 
+Examples: 
+• 
+Regression models (e.g., price prediction) 
+• 
+Probability distributions (e.g., binomial, normal) 
+ 
+Type 
+Description 
+Example 
+Random 
+Sampling 
+Every element has equal chance of 
+being selected 
+1,000 random Netflix users 
+Stratified 
+Sampling 
+Population divided into groups 
+(strata) and samples taken from each 
+Users grouped by region or gender 
+Systematic 
+Sampling 
+Every kth element from ordered list 
+Every 10th transaction 
+Cluster 
+Sampling 
+Divide population into clusters and 
+randomly select entire clusters 
+Select few universities for student 
+survey 
+Convenience 
+Sampling 
+Based on ease of access (biased) 
+Surveying people at your own 
+university gate 
+
+
+===== END OF notes.pdf =====
+
+
+
+===== START OF Notes2.pdf =====
+
+Machine Learning Overview 
+Machine Learning (ML) is a type of software that predicts outcomes based on data. The more 
+experience (data) provided to the machine, the more accurate its predictions become. Essentially, 
+the machine learns from past data to improve its performance over time. 
+Types of Learning in Machine Learning 
+1. Supervised Learning: 
+In supervised learning, the model is trained on labeled data, where both the input and 
+output are provided. The goal is to learn the relationship between input variables and the 
+corresponding output. 
+2. Unsupervised Learning: 
+This involves training a model on data that is not labeled. The model tries to find hidden 
+patterns or relationships within the data. 
+3. Semi-Supervised Learning: 
+Semi-supervised learning uses both labeled and unlabeled data. The model improves by 
+leveraging the large amount of unlabeled data, while still relying on the smaller amount 
+of labeled data. 
+4. Reinforcement Learning: 
+In reinforcement learning, an agent performs actions in an environment and receives 
+rewards or penalties based on its actions. The goal of the agent is to maximize its 
+cumulative reward over time. This is achieved by learning from both positive and 
+negative feedback, gradually improving its decision-making policy. 
+Types of Model Training Approaches 
+1. Batch Learning: 
+In batch learning, the entire dataset is used to train the model at once. This approach 
+requires loading all the data into memory, which can be problematic if the dataset is large 
+(e.g., 1-2 TB). Additionally, once trained, the model cannot learn from new data without 
+retraining on the combined old and new data. 
+2. Online Learning: 
+In online learning, the model is trained incrementally as new data becomes available. 
+This allows for continuous learning without needing to retrain the entire model. New data 
+can be easily integrated, and memory is not as big of an issue as in batch learning. 
+o Disadvantages of Online Learning: 
+ 
+It can be challenging to set the priority or learning rate for new data. If 
+new data with errors is given high priority, the model may be negatively 
+influenced. Conversely, if high-quality data is given low priority, the 
+model may not learn effectively from it. 
+ 
+ 
+Model-Based vs Instance-Based Algorithms 
+1. Model-Based Algorithms: 
+These algorithms use a predictive model to make predictions. The model doesn't require 
+access to all past data once trained. 
+2. Instance-Based Algorithms: 
+Instance-based algorithms rely on the entire dataset to make predictions. This approach 
+can lead to memory issues since all data needs to be stored and used during the prediction 
+process. 
+In summary, machine learning offers various learning methods and training techniques that can 
+be tailored to different use cases, depending on factors like the size of the data, memory 
+constraints, and the desired learning approach. 
+ 
+Fundamental Challenges in Machine Learning 
+In machine learning, several fundamental challenges can arise, both in terms of the data and the 
+model. Addressing these issues is crucial for building accurate and reliable models. 
+Challenges with Data 
+1. Bad Data: 
+Poor quality data can lead to incorrect predictions. Data needs to be cleaned and 
+preprocessed effectively to ensure good results. 
+2. Insufficient Data: 
+A lack of adequate data makes it difficult for the model to learn patterns, leading to 
+underperformance. 
+3. Non-Representative Data: 
+If the training data doesn’t accurately represent the real-world population or scenario, the 
+model may not generalize well. 
+4. Sampling Noise: 
+When too little data is sampled, there is a higher risk of including noise, which can distort 
+the learning process and lead to inaccurate predictions. 
+5. Sampling Bias: 
+Sampling bias occurs when a subset of data that does not represent the diversity of the 
+entire dataset is used. This can result in skewed or biased models. 
+6. Irrelevant Data: 
+Including irrelevant features in the training data can confuse the model and lower its 
+performance. Feature selection is necessary to focus on important data points. 
+Challenges with the Model 
+1. Overfitting: 
+Overfitting happens when a model is too complex and learns not only the underlying 
+patterns but also the noise in the data. This leads to poor generalization on new data. 
+2. Underfitting: 
+Underfitting occurs when the model is too simple to capture the underlying trends in the 
+data, resulting in poor performance on both training and unseen data. 
+3. Model Generalization: 
+To achieve a balance between overfitting and underfitting, a model must generalize well. 
+This means it should perform well not just on the training data but also on unseen test 
+data. 
+4. Imbalanced Datasets: 
+Random sampling doesn't work well with imbalanced datasets, where one class is 
+represented far more than others. In such cases, stratified sampling should be used to 
+ensure that each class is proportionally represented. 
+Validation Data and Testing 
+1. Hyperparameter Tuning: 
+Hyperparameters, which are set before training begins, need to be carefully tuned to 
+optimize the model’s performance. 
+2. Model Selection: 
+Choosing the right model for the task is critical. The selection process involves 
+comparing the performance of different models on validation data. 
+3. Test Data: 
+A model should be tested on a separate set of data, known as test data, to assess how well 
+it generalizes to unseen data after training and validation. 
+In summary, successful machine learning requires attention to both data quality and model 
+complexity. Addressing these challenges ensures that the model is both accurate and 
+generalizable across various data inputs. 
+Distance Metrics in Machine Learning 
+1. Euclidean Distance: 
+This metric calculates the shortest straight-line distance between two points in Euclidean 
+space. It is commonly used for continuous data in machine learning algorithms. 
+2. Manhattan Distance: 
+Also known as "L1 distance," it calculates the distance between two points by summing 
+the absolute differences of their coordinates. It measures the vertical and horizontal 
+distances, like navigating a city grid. 
+ 
+ 
+Data Leakage 
+ 
+Data Leakage occurs when information from the test dataset unintentionally influences 
+the model during training or hyperparameter tuning. 
+ 
+The test dataset should remain unseen by the model to accurately measure how well the 
+model generalizes to new data. 
+ 
+To avoid data leakage, the validation dataset is used to tune hyperparameters and select 
+models. The test dataset should only be used for final evaluation. 
+ 
+Data Mismatch 
+ 
+Data Mismatch happens when the test or validation data does not accurately represent 
+the real-world scenario. 
+ 
+For instance, using highly processed web images for training but testing on real-life 
+images may lead to poor model performance. 
+ 
+It is crucial to use real-life and representative data for testing to ensure the model can 
+generalize properly to unseen scenarios. 
+ 
+Train-Dev Set 
+ 
+The Train-Dev set is used to evaluate whether the model is overfitting. 
+ 
+If the train-dev accuracy is much lower than the actual training set accuracy, it indicates 
+overfitting. This means the model is learning too much from the training data and may 
+not perform well on unseen data. 
+Model Evaluation Metrics 
+When evaluating a machine learning model, we often use various metrics to measure how well 
+the model performs. Here are some key concepts and metrics: 
+1. Error Magnitude: 
+When calculating errors, we are only interested in the magnitude, not whether the error is 
+positive or negative. The absolute value of errors is considered to avoid canceling out 
+errors (positive and negative errors balancing each other). 
+2. Mean Absolute Error (MAE): 
+o This metric calculates the average of the absolute differences between the 
+predicted and actual values. 
+o MAE is helpful because it is easy to interpret, but it doesn't highlight larger errors 
+as much as other metrics. 
+3. Mean Squared Error (MSE): 
+o MSE is the average of the squared differences between predicted and actual 
+values.5  
+o It is the square of MAE, and by squaring the errors, MSE gives more weight to 
+larger errors, making it easier to catch significant errors. 
+o One downside is that it is harder to interpret in the original scale since the errors 
+are squared. 
+4. Root Mean Squared Error (RMSE): 
+o RMSE is the square root of MSE. 
+o It brings the error back to the original scale of the data, making it more 
+interpretable for reporting purposes. 
+o RMSE is often used in reports because it provides a clearer sense of how much 
+error can be expected in the original units. 
+ 
+Convex Graph & Parameter Tuning 
+ 
+When tuning hyperparameters of a model, running the model with different parameter 
+values will often create a convex graph between the error and the parameter values. 
+ 
+The goal is to minimize the error, and the global minima (lowest point on the graph) 
+represents the best parameter value that results in the least error. 
+ 
+Identifying and using the global minima helps optimize the model performance. 
+ 
+
+
+===== END OF Notes2.pdf =====
+
