@@ -269,7 +269,7 @@ def generate_mcqs(mcq_target: int = DEFAULT_TARGET_MCQ) -> MCQList:
 
     # ── Extract main topics ───────────────────────────────────────
     topic_extraction_prompt = f"""\
-From the following study material, identify the 5–12 most important learning topics.
+From the following study material, identify the most important learning topics.
 
 Return ONLY valid JSON:
 
