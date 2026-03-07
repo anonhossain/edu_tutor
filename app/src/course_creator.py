@@ -435,11 +435,9 @@
 
 
 
-
-
 import os
 import json
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 import pymupdf
 from dotenv import load_dotenv
@@ -455,7 +453,7 @@ load_dotenv()
 
 
 # ────────────────────────────────────────────────
-# Configuration ─ all tunable values in one place
+# Configuration
 # ────────────────────────────────────────────────
 
 PINECONE_INDEX_NAME     = "course-curriculum"
@@ -465,19 +463,17 @@ PINECONE_CLOUD          = "aws"
 PINECONE_REGION         = "us-east-1"
 
 EMBEDDING_MODEL         = "text-embedding-3-small"
-CHUNK_SIZE              = 1000
-CHUNK_OVERLAP           = 100
+CHUNK_SIZE              = 900
+CHUNK_OVERLAP           = 80
 
 SUMMARIZATION_MODEL     = "gpt-4o-mini"
-GENERATION_MODEL        = "gpt-4o"
+GENERATION_MODEL        = "gpt-4o-mini"          # using mini also for generation to save cost/speed
 
-RETRIEVE_TOP_K          = 5                 # increased back for better coverage
+GLOBAL_TOP_K            = 25                    # enough to understand whole document structure
+PER_CHAPTER_TOP_K       = 5                     # relevant chunks per chapter
 
 DEFAULT_INPUT_FOLDER    = "app/files"
 DEFAULT_OUTPUT_FOLDER   = "app/output"
-
-SUMMARIZATION_PROMPT    = "Summarize the text and extract key concepts."
-CHAPTER_TITLE_PROMPT    = "Create important structured curriculum chapter titles based on the summaries. Return one chapter per line."
 
 
 # ────────────────────────────────────────────────
@@ -510,16 +506,6 @@ class Curriculum(BaseModel):
 # ────────────────────────────────────────────────
 
 def word_extractor(input_folder: str, output_folder: str | None = None) -> str:
-    """
-    Extract and merge text from all PDFs in the input folder.
-    
-    Args:
-        input_folder: Folder containing PDF files
-        output_folder: Optional - if provided, saves merged text as .txt
-    
-    Returns:
-        str: The complete merged text from all PDFs
-    """
     merged_text = ""
     first_pdf_name = None
 
@@ -533,15 +519,11 @@ def word_extractor(input_folder: str, output_folder: str | None = None) -> str:
             try:
                 doc = pymupdf.open(pdf_path)
                 merged_text += f"\n\n===== START OF {file} =====\n\n"
-
                 for page in doc:
                     merged_text += page.get_text()
-
                 merged_text += f"\n\n===== END OF {file} =====\n\n"
-
                 print(f"Processed: {file}")
                 doc.close()
-
             except Exception as e:
                 print(f"Error processing {file}: {e}")
 
@@ -549,13 +531,12 @@ def word_extractor(input_folder: str, output_folder: str | None = None) -> str:
         print("No PDF files found or no text extracted.")
         return ""
 
-    # Optional: save to file if output_folder is provided
     if output_folder:
         os.makedirs(output_folder, exist_ok=True)
         output_path = os.path.join(output_folder, first_pdf_name or "merged_notes.txt")
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(merged_text)
-        print(f"Merged text also saved to: {output_path}")
+        print(f"Merged text saved to: {output_path}")
 
     return merged_text
 
@@ -571,17 +552,15 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
 
 
 def chunk_and_embed(text: str):
-    """Chunk the provided text string and embed + upsert to Pinecone"""
     if not text.strip():
-        print("No text provided for chunking and embedding.")
+        print("No text to chunk/embed.")
         return
 
     chunks = chunk_text(text)
 
-    # Create index if missing
-    existing_indexes = [idx.name for idx in pc.list_indexes()]
-    if PINECONE_INDEX_NAME not in existing_indexes:
-        print(f"Creating Pinecone index: {PINECONE_INDEX_NAME}")
+    existing = {idx.name for idx in pc.list_indexes()}
+    if PINECONE_INDEX_NAME not in existing:
+        print(f"Creating index: {PINECONE_INDEX_NAME}")
         pc.create_index(
             name=PINECONE_INDEX_NAME,
             dimension=PINECONE_DIMENSION,
@@ -590,32 +569,63 @@ def chunk_and_embed(text: str):
         )
 
     index = pc.Index(PINECONE_INDEX_NAME)
-
     vectors = []
+
     for i, chunk in enumerate(chunks):
         try:
-            embedding_resp = client.embeddings.create(
+            emb = client.embeddings.create(
                 model=EMBEDDING_MODEL,
                 input=chunk
-            )
-            vector = {
+            ).data[0].embedding
+
+            vectors.append({
                 "id": f"chunk_{i}",
-                "values": embedding_resp.data[0].embedding,
+                "values": emb,
                 "metadata": {"text": chunk}
-            }
-            vectors.append(vector)
+            })
         except Exception as e:
-            print(f"Embedding error on chunk {i}: {e}")
+            print(f"Embedding failed chunk {i}: {e}")
 
     if vectors:
-        index.upsert(vectors=vectors)
-        print(f"Upserted {len(vectors)} vectors to Pinecone")
+        index.upsert(vectors)
+        print(f"Upserted {len(vectors)} chunks")
     else:
         print("No vectors created.")
 
 
+def summarize_and_extract_keywords(chunk: str) -> Tuple[str, List[str]]:
+    """Summarize chunk + extract keywords"""
+    try:
+        resp = client.chat.completions.create(
+            model=SUMMARIZATION_MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Summarize the text concisely (80–150 words) and extract 5–12 most important keywords or key concepts."
+                },
+                {"role": "user", "content": chunk}
+            ],
+            temperature=0.25,
+            max_tokens=300
+        )
+        content = resp.choices[0].message.content.strip()
+
+        # Very simple split — in production you might parse better
+        if "\nKeywords:" in content:
+            summary, kw_part = content.split("\nKeywords:", 1)
+            keywords = [k.strip() for k in kw_part.split(",") if k.strip()]
+        else:
+            summary = content
+            keywords = []
+
+        return summary.strip(), keywords
+    except Exception as e:
+        print(f"Summarize/keyword error: {e}")
+        return "", []
+
+
 # ────────────────────────────────────────────────
-# Core Curriculum Generation Logic
+# Core Curriculum Generation
 # ────────────────────────────────────────────────
 
 def curriculum_maker(output_folder: str):
@@ -623,149 +633,172 @@ def curriculum_maker(output_folder: str):
 
     index = pc.Index(PINECONE_INDEX_NAME)
 
-    print("Retrieving chunks from Pinecone...")
+    print("Retrieving chunks for global analysis...")
     results = index.query(
         vector=[0.0] * PINECONE_DIMENSION,
-        top_k=RETRIEVE_TOP_K,
+        top_k=GLOBAL_TOP_K,
         include_metadata=True
     )
 
-    chunks = [match["metadata"]["text"] for match in results["matches"] if "text" in match["metadata"]]
-    print(f"Retrieved {len(chunks)} chunks")
+    chunks = [m["metadata"]["text"] for m in results["matches"] if "text" in m["metadata"]]
+    print(f"Retrieved {len(chunks)} chunks for structure discovery")
 
-    # Step 1: Summarize chunks
+    # Step 1: Summarize + extract keywords from each chunk
+    print("Summarizing chunks and extracting keywords...")
     summaries = []
-    for chunk in chunks:
-        try:
-            response = client.chat.completions.create(
-                model=SUMMARIZATION_MODEL,
-                messages=[
-                    {"role": "system", "content": SUMMARIZATION_PROMPT},
-                    {"role": "user",   "content": chunk}
-                ],
-                temperature=0.3,
-                max_tokens=400
-            )
-            summaries.append(response.choices[0].message.content)
-        except Exception as e:
-            print(f"Summarization error: {e}")
+    all_keywords = set()
 
-    print("Chunk summarization completed")
+    for i, chunk in enumerate(chunks):
+        summary, keywords = summarize_and_extract_keywords(chunk)
+        if summary:
+            summaries.append(f"Chunk {i+1}:\n{summary}")
+        all_keywords.update(keywords)
 
-    # Step 2: Generate chapter titles
-    combined_summary = "\n".join(summaries)
+    print(f"Collected {len(summaries)} summaries • {len(all_keywords)} unique keywords")
 
-    chapter_response = client.chat.completions.create(
-        model=GENERATION_MODEL,
-        messages=[
-            {"role": "system", "content": CHAPTER_TITLE_PROMPT},
-            {"role": "user",   "content": combined_summary}
-        ]
-    )
+    # Step 2: Generate chapter structure from all summaries + keywords
+    combined_input = "\n\n".join(summaries) + f"\n\nKey concepts across document:\n{', '.join(sorted(all_keywords))}"
 
-    chapters_list = [
-        line.strip("- ").strip()
-        for line in chapter_response.choices[0].message.content.split("\n")
-        if line.strip() and len(line.strip()) > 5
-    ]
+    chapter_prompt = """
+Analyze the provided summaries and key concepts from the entire document.
+Create a logical, practical and well-structured curriculum outline.
 
-    print(f"Identified {len(chapters_list)} chapters")
+Decide on the most appropriate NUMBER of chapters based on the natural content divisions, depth and scope.
+Do NOT force a fixed number — let the material determine it (most courses end up with 6–16 chapters).
 
-    # Step 3: Assign chunks to chapters
-    numbered_chapters = "\n".join([f"{i+1}. {ch}" for i, ch in enumerate(chapters_list)])
-    chapter_chunks: Dict[str, List[str]] = {ch: [] for ch in chapters_list}
+Chapters should be:
+- Progressive (build on previous knowledge)
+- Non-overlapping
+- Pedagogically meaningful
+- Suitable for a semester-long course or similar
 
-    for chunk in chunks:
-        try:
-            resp = client.chat.completions.create(
-                model=SUMMARIZATION_MODEL,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": f"""
-Choose the MOST relevant chapter number for this text chunk.
+Return ONLY the chapter titles — one title per line.
+No numbers, no explanations, no extra text.
+"""
 
-Chapters:
-{numbered_chapters}
-
-Return ONLY the number (1-{len(chapters_list)}).
-                        """
-                    },
-                    {"role": "user", "content": chunk[:4000]}
-                ],
-                temperature=0.1,
-                max_tokens=10
-            )
-            answer = resp.choices[0].message.content.strip()
-            try:
-                idx = int(answer) - 1
-                if 0 <= idx < len(chapters_list):
-                    chapter_name = chapters_list[idx]
-                    chapter_chunks[chapter_name].append(chunk)
-            except ValueError:
-                pass
-        except Exception:
-            pass
-
-    print("Chunks assigned to chapters")
-
-    # Step 4: Generate topics + content
-    final_chapters = []
-
-    for chapter_title, texts in chapter_chunks.items():
-        if not texts:
-            continue
-
-        context = "\n\n".join(texts[:6])  # limit context
-
-        # Generate topics
-        topic_resp = client.chat.completions.create(
+    try:
+        resp = client.chat.completions.create(
             model=GENERATION_MODEL,
             messages=[
-                {
-                    "role": "system",
-                    "content": f"Generate 3-5 clear learning topics for chapter: {chapter_title}. Return one per line."
-                },
-                {"role": "user", "content": context}
-            ]
+                {"role": "system", "content": chapter_prompt},
+                {"role": "user",   "content": combined_input[:32000]}  # safety limit
+            ],
+            temperature=0.35,
+            max_tokens=800
         )
 
-        topics_list = [
-            t.strip("- ").strip()
-            for t in topic_resp.choices[0].message.content.split("\n")
-            if t.strip() and len(t.strip()) > 5
+        chapters_list = [
+            line.strip("- ").strip()
+            for line in resp.choices[0].message.content.split("\n")
+            if line.strip() and len(line.strip()) > 8
         ]
 
+        print(f"Generated {len(chapters_list)} chapters")
+
+    except Exception as e:
+        print(f"Chapter generation failed: {e}")
+        return
+
+    if not chapters_list:
+        print("No chapters generated.")
+        return
+
+    # Step 3: For each chapter → retrieve relevant chunks → generate topics + content
+    final_chapters = []
+
+    for chapter_title in chapters_list:
+        print(f"\nProcessing chapter: {chapter_title}")
+
+        # Embed chapter title to retrieve relevant chunks
+        try:
+            query_emb = client.embeddings.create(
+                model=EMBEDDING_MODEL,
+                input=f"Chapter: {chapter_title}"
+            ).data[0].embedding
+
+            res = index.query(
+                vector=query_emb,
+                top_k=PER_CHAPTER_TOP_K,
+                include_metadata=True
+            )
+
+            chapter_chunks = [m["metadata"]["text"] for m in res["matches"] if "text" in m["metadata"]]
+            print(f"  → Retrieved {len(chapter_chunks)} relevant chunks")
+
+        except Exception as e:
+            print(f"  Retrieval failed for chapter '{chapter_title}': {e}")
+            continue
+
+        if not chapter_chunks:
+            continue
+
+        context = "\n\n".join(chapter_chunks)
+
+        # Generate topics (AI decides number)
+        topic_prompt = f"""
+For the chapter titled "{chapter_title}", generate an appropriate number of clear, granular learning topics/subsections.
+
+Base the count on the actual content depth (usually 4–12 topics per chapter).
+Topics should be logical, sequential, and non-redundant.
+Return ONLY the topic titles — one per line. No numbers, no extra text.
+"""
+
+        try:
+            topic_resp = client.chat.completions.create(
+                model=GENERATION_MODEL,
+                messages=[
+                    {"role": "system", "content": topic_prompt},
+                    {"role": "user",   "content": context[:28000]}
+                ],
+                temperature=0.3,
+                max_tokens=600
+            )
+
+            topics_list = [
+                t.strip("- ").strip()
+                for t in topic_resp.choices[0].message.content.split("\n")
+                if t.strip() and len(t.strip()) > 6
+            ]
+
+            print(f"  → Generated {len(topics_list)} topics")
+
+        except Exception as e:
+            print(f"  Topic generation failed: {e}")
+            continue
+
         topics = []
+
         for topic_title in topics_list:
+            content_prompt = f"Write detailed, clear and educational content for the topic: '{topic_title}' within the chapter '{chapter_title}'."
+
             try:
                 content_resp = client.chat.completions.create(
                     model=GENERATION_MODEL,
                     messages=[
-                        {
-                            "role": "system",
-                            "content": f"Write detailed educational material for the topic: {topic_title}"
-                        },
-                        {"role": "user", "content": context}
-                    ]
+                        {"role": "system", "content": content_prompt},
+                        {"role": "user",   "content": context}
+                    ],
+                    temperature=0.4,
+                    max_tokens=1800
                 )
                 content = content_resp.choices[0].message.content.strip()
                 topics.append(Topic(topic_title=topic_title, content=content))
+                print(f"    Topic done: {topic_title[:60]}...")
             except Exception as e:
-                print(f"Content generation failed for topic '{topic_title}': {e}")
+                print(f"    Content failed for '{topic_title}': {e}")
 
-        final_chapters.append(
-            Chapter(chapter_title=chapter_title, topics=topics)
-        )
+        if topics:
+            final_chapters.append(Chapter(chapter_title=chapter_title, topics=topics))
 
+    # Save
     curriculum = Curriculum(chapters=final_chapters)
-
-    # Save result
     output_path = os.path.join(output_folder, "curriculum.json")
+
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(curriculum.model_dump(), f, indent=2, ensure_ascii=False)
 
-    print(f"Curriculum saved to: {output_path}")
+    print(f"\nCurriculum saved → {output_path}")
+    print(f"Total chapters: {len(final_chapters)}")
 
 
 # ────────────────────────────────────────────────
@@ -774,14 +807,13 @@ Return ONLY the number (1-{len(chapters_list)}).
 
 def remove_index(index_name: str = PINECONE_INDEX_NAME):
     try:
-        indexes = [idx["name"] for idx in pc.list_indexes()]
-        if index_name in indexes:
+        if index_name in [i["name"] for i in pc.list_indexes()]:
             pc.delete_index(index_name)
-            print(f"Index '{index_name}' removed successfully.")
+            print(f"Index '{index_name}' deleted.")
         else:
-            print(f"Index '{index_name}' does not exist.")
+            print(f"Index '{index_name}' not found.")
     except Exception as e:
-        print(f"Error removing index: {e}")
+        print(f"Delete index error: {e}")
 
 
 # ────────────────────────────────────────────────
@@ -789,47 +821,32 @@ def remove_index(index_name: str = PINECONE_INDEX_NAME):
 # ────────────────────────────────────────────────
 
 def run_curriculum_maker(input_folder: str = DEFAULT_INPUT_FOLDER, output_folder: str = DEFAULT_OUTPUT_FOLDER):
-    """
-    Full pipeline:
-    1. Extract text from PDFs → returns string
-    2. Chunk & embed the text (in memory)
-    3. Generate and save curriculum JSON
-    4. Clean up Pinecone index
-    """
-    print("\n" + "="*60)
-    print("     COURSE CURRICULUM GENERATION PIPELINE STARTED")
-    print("="*60 + "\n")
+    print("\n" + "═"*70)
+    print("     COURSE CURRICULUM GENERATION – HIERARCHICAL RAG")
+    print("═"*70 + "\n")
 
-    # Step 1
-    print("STEP 1: Extracting text from PDFs...")
-    merged_text = word_extractor(input_folder, output_folder)  # returns text
+    print("1. Extracting text from PDFs...")
+    full_text = word_extractor(input_folder, output_folder)
 
-    if not merged_text.strip():
-        print("ERROR: No text could be extracted. Stopping.")
+    if not full_text.strip():
+        print("No text extracted → stopping.")
         return
 
-    print(f"Extracted {len(merged_text):,} characters.")
+    print(f"   Extracted {len(full_text):,} characters")
 
-    # Step 2
-    print("\nSTEP 2: Chunking & embedding to Pinecone...")
-    chunk_and_embed(merged_text)
+    print("\n2. Chunking & embedding to Pinecone...")
+    chunk_and_embed(full_text)
 
-    # Step 3
-    print("\nSTEP 3: Generating structured curriculum...")
+    print("\n3. Generating curriculum structure and content...")
     curriculum_maker(output_folder)
 
-    # Cleanup
-    print("\nCleaning up Pinecone index...")
+    print("\n4. Cleaning up Pinecone index...")
     remove_index()
 
-    print("\n" + "="*60)
-    print("           PIPELINE COMPLETED SUCCESSFULLY")
-    print("="*60)
+    print("\n" + "═"*70)
+    print("               FINISHED")
+    print("═"*70)
 
-
-# ────────────────────────────────────────────────
-# Entry point
-# ────────────────────────────────────────────────
 
 if __name__ == "__main__":
     run_curriculum_maker()

@@ -39,12 +39,12 @@ CHUNK_OVERLAP            = 150
 # LLM settings - topic extraction
 TOPIC_EXTRACTION_MODEL   = "gpt-4o-mini"
 TOPIC_EXTRACTION_TEMP    = 0.2
-TOPIC_EXTRACTION_MAX_TOK = 8192                  # generous, but safe
+TOPIC_EXTRACTION_MAX_TOK = 6000                  # generous, but safe
 
 # LLM settings - MCQ generation per topic
 MCQ_GENERATION_MODEL     = "gpt-4o-mini"
 MCQ_GENERATION_TEMP      = 0.25
-MCQ_GENERATION_MAX_TOK   = 4096
+MCQ_GENERATION_MAX_TOK   = 3000
 
 # General generation settings
 DEFAULT_TARGET_MCQ       = 50                    # fallback if not passed
