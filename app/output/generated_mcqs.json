@@ -1,0 +1,279 @@
+{
+  "mcqs": [
+    {
+      "mcq_no": 1,
+      "topic": "Fundamental Challenges in Machine Learning",
+      "question": "What is a primary consequence of using poor quality data in machine learning?",
+      "option_a": "It leads to incorrect predictions.",
+      "option_b": "It improves model accuracy.",
+      "option_c": "It reduces training time.",
+      "option_d": "It increases data storage requirements.",
+      "correct_ans": "a",
+      "explanation": "Poor quality data can lead to incorrect predictions because it does not accurately represent the underlying patterns needed for effective learning."
+    },
+    {
+      "mcq_no": 2,
+      "topic": "Fundamental Challenges in Machine Learning",
+      "question": "What is the issue with insufficient data in machine learning?",
+      "option_a": "It can cause overfitting.",
+      "option_b": "It makes it difficult for the model to learn patterns.",
+      "option_c": "It leads to faster training times.",
+      "option_d": "It ensures better generalization.",
+      "correct_ans": "b",
+      "explanation": "Insufficient data makes it difficult for the model to learn patterns, which can lead to underperformance."
+    },
+    {
+      "mcq_no": 3,
+      "topic": "Fundamental Challenges in Machine Learning",
+      "question": "What does 'data leakage' refer to in machine learning?",
+      "option_a": "Using too much training data.",
+      "option_b": "When test data influences the model during training.",
+      "option_c": "The model failing to generalize to new data.",
+      "option_d": "Incorporating irrelevant features in the dataset.",
+      "correct_ans": "b",
+      "explanation": "Data leakage occurs when information from the test dataset unintentionally influences the model during training, which can lead to overly optimistic performance estimates."
+    },
+    {
+      "mcq_no": 4,
+      "topic": "Data Quality Issues",
+      "question": "What is a major consequence of using bad data in machine learning?",
+      "option_a": "It can lead to incorrect predictions.",
+      "option_b": "It improves model accuracy.",
+      "option_c": "It reduces training time.",
+      "option_d": "It simplifies the model selection process.",
+      "correct_ans": "a",
+      "explanation": "Bad data can introduce errors and noise, leading to incorrect predictions and poor model performance."
+    },
+    {
+      "mcq_no": 5,
+      "topic": "Data Quality Issues",
+      "question": "How does insufficient data affect a machine learning model?",
+      "option_a": "It allows for better generalization.",
+      "option_b": "It makes it difficult for the model to learn patterns.",
+      "option_c": "It enhances the model's complexity.",
+      "option_d": "It improves the model's training speed.",
+      "correct_ans": "b",
+      "explanation": "Insufficient data limits the model's ability to learn and recognize patterns, leading to underperformance."
+    },
+    {
+      "mcq_no": 6,
+      "topic": "Data Quality Issues",
+      "question": "What is the impact of using non-representative data in training a model?",
+      "option_a": "It ensures the model performs well on all data.",
+      "option_b": "It can lead to biased predictions.",
+      "option_c": "It simplifies the data preprocessing steps.",
+      "option_d": "It has no significant impact on model performance.",
+      "correct_ans": "b",
+      "explanation": "Non-representative data can cause the model to learn patterns that do not generalize well to real-world scenarios, resulting in biased predictions."
+    },
+    {
+      "mcq_no": 7,
+      "topic": "Model Selection and Hyperparameter Tuning",
+      "question": "What is the primary goal of hyperparameter tuning in machine learning?",
+      "option_a": "To minimize the model's error on training data",
+      "option_b": "To optimize the model's performance on unseen data",
+      "option_c": "To increase the complexity of the model",
+      "option_d": "To reduce the size of the training dataset",
+      "correct_ans": "b",
+      "explanation": "Hyperparameter tuning aims to find the best parameters that improve the model's performance on unseen data, ensuring better generalization."
+    },
+    {
+      "mcq_no": 8,
+      "topic": "Model Selection and Hyperparameter Tuning",
+      "question": "Which of the following is NOT a common method for model selection?",
+      "option_a": "Cross-validation",
+      "option_b": "Grid search",
+      "option_c": "Random sampling",
+      "option_d": "Holdout validation",
+      "correct_ans": "c",
+      "explanation": "Random sampling is not a standard method for model selection; instead, techniques like cross-validation, grid search, and holdout validation are commonly used."
+    },
+    {
+      "mcq_no": 9,
+      "topic": "Model Selection and Hyperparameter Tuning",
+      "question": "What does overfitting indicate in the context of model evaluation?",
+      "option_a": "The model performs well on both training and test data",
+      "option_b": "The model is too simple to capture the underlying trends",
+      "option_c": "The model learns noise from the training data",
+      "option_d": "The model is generalizing well to new data",
+      "correct_ans": "c",
+      "explanation": "Overfitting occurs when a model learns not only the underlying patterns but also the noise in the training data, leading to poor performance on unseen data."
+    },
+    {
+      "mcq_no": 10,
+      "topic": "Distance Metrics in Machine Learning",
+      "question": "What does the Euclidean distance measure?",
+      "option_a": "The shortest straight-line distance between two points in Euclidean space",
+      "option_b": "The sum of the absolute differences of their coordinates",
+      "option_c": "The average of the squared differences between predicted and actual values",
+      "option_d": "The cumulative reward received by an agent in reinforcement learning",
+      "correct_ans": "a",
+      "explanation": "Euclidean distance calculates the shortest straight-line distance between two points in Euclidean space, making it a fundamental metric in machine learning."
+    },
+    {
+      "mcq_no": 11,
+      "topic": "Distance Metrics in Machine Learning",
+      "question": "Which distance metric is also known as 'L1 distance'?",
+      "option_a": "Euclidean Distance",
+      "option_b": "Manhattan Distance",
+      "option_c": "Cosine Similarity",
+      "option_d": "Hamming Distance",
+      "correct_ans": "b",
+      "explanation": "Manhattan distance, also known as L1 distance, measures the distance between two points by summing the absolute differences of their coordinates."
+    },
+    {
+      "mcq_no": 12,
+      "topic": "Batch Learning vs Online Learning",
+      "question": "What is a primary disadvantage of batch learning?",
+      "option_a": "Requires all data to be loaded into memory at once",
+      "option_b": "Can adapt to new data incrementally",
+      "option_c": "Does not require a large dataset",
+      "option_d": "Is less computationally intensive than online learning",
+      "correct_ans": "a",
+      "explanation": "Batch learning requires the entire dataset to be loaded into memory, which can be problematic for large datasets."
+    },
+    {
+      "mcq_no": 13,
+      "topic": "Batch Learning vs Online Learning",
+      "question": "Which of the following statements is true about online learning?",
+      "option_a": "It trains the model using the entire dataset at once.",
+      "option_b": "It allows for continuous learning as new data becomes available.",
+      "option_c": "It is less efficient for small datasets.",
+      "option_d": "It cannot adapt to changes in data over time.",
+      "correct_ans": "b",
+      "explanation": "Online learning allows the model to be trained incrementally as new data arrives, facilitating continuous learning."
+    },
+    {
+      "mcq_no": 14,
+      "topic": "Overfitting and Underfitting",
+      "question": "What is overfitting in machine learning?",
+      "option_a": "When a model learns both the underlying patterns and noise in the training data.",
+      "option_b": "When a model fails to capture the underlying trends in the data.",
+      "option_c": "When a model performs well on unseen data but poorly on training data.",
+      "option_d": "When a model is too simple to learn from the training data.",
+      "correct_ans": "a",
+      "explanation": "Overfitting occurs when a model is too complex and learns not only the underlying patterns but also the noise in the data, leading to poor generalization."
+    },
+    {
+      "mcq_no": 15,
+      "topic": "Overfitting and Underfitting",
+      "question": "Which of the following best describes underfitting?",
+      "option_a": "A model that performs well on training data but poorly on test data.",
+      "option_b": "A model that is too complex and captures noise in the data.",
+      "option_c": "A model that is too simple to capture the underlying trends in the data.",
+      "option_d": "A model that generalizes well across different datasets.",
+      "correct_ans": "c",
+      "explanation": "Underfitting occurs when a model is too simple to capture the underlying trends in the data, resulting in poor performance on both training and unseen data."
+    },
+    {
+      "mcq_no": 16,
+      "topic": "Data Leakage",
+      "question": "What is data leakage in the context of machine learning?",
+      "option_a": "When test data influences the training process.",
+      "option_b": "When training data is too small.",
+      "option_c": "When the model is overfitting.",
+      "option_d": "When irrelevant features are included in the model.",
+      "correct_ans": "a",
+      "explanation": "Data leakage occurs when information from the test dataset unintentionally influences the model during training, leading to overly optimistic performance estimates."
+    },
+    {
+      "mcq_no": 17,
+      "topic": "Data Leakage",
+      "question": "How can data leakage be prevented during model evaluation?",
+      "option_a": "By using the test dataset for hyperparameter tuning.",
+      "option_b": "By keeping the test dataset separate and unseen during training.",
+      "option_c": "By increasing the size of the training dataset.",
+      "option_d": "By using only labeled data for training.",
+      "correct_ans": "b",
+      "explanation": "To prevent data leakage, the test dataset should remain unseen by the model during training and hyperparameter tuning, ensuring accurate evaluation of the model's performance."
+    },
+    {
+      "mcq_no": 18,
+      "topic": "Model Evaluation Metrics",
+      "question": "Which metric calculates the average of the absolute differences between predicted and actual values?",
+      "option_a": "Mean Absolute Error (MAE)",
+      "option_b": "Mean Squared Error (MSE)",
+      "option_c": "Root Mean Squared Error (RMSE)",
+      "option_d": "Mean Error",
+      "correct_ans": "a",
+      "explanation": "Mean Absolute Error (MAE) is defined as the average of the absolute differences between predicted and actual values, making it easy to interpret."
+    },
+    {
+      "mcq_no": 19,
+      "topic": "Model Evaluation Metrics",
+      "question": "What is the main advantage of using Root Mean Squared Error (RMSE) over Mean Squared Error (MSE)?",
+      "option_a": "RMSE is easier to interpret in the original scale of the data.",
+      "option_b": "RMSE gives more weight to smaller errors.",
+      "option_c": "RMSE is less sensitive to outliers than MSE.",
+      "option_d": "RMSE does not require actual values for calculation.",
+      "correct_ans": "a",
+      "explanation": "The main advantage of RMSE is that it brings the error back to the original scale of the data, making it more interpretable for reporting purposes."
+    },
+    {
+      "mcq_no": 20,
+      "topic": "Imbalanced Datasets",
+      "question": "What is a common strategy used to handle imbalanced datasets in machine learning?",
+      "option_a": "Stratified sampling",
+      "option_b": "Random sampling",
+      "option_c": "Data augmentation",
+      "option_d": "Feature selection",
+      "correct_ans": "a",
+      "explanation": "Stratified sampling ensures that each class in the dataset is proportionally represented, which helps to address the issues caused by imbalanced datasets."
+    },
+    {
+      "mcq_no": 21,
+      "topic": "Imbalanced Datasets",
+      "question": "Why is random sampling not effective for imbalanced datasets?",
+      "option_a": "It may lead to underrepresentation of minority classes",
+      "option_b": "It increases the size of the dataset",
+      "option_c": "It guarantees equal representation of all classes",
+      "option_d": "It simplifies the model training process",
+      "correct_ans": "a",
+      "explanation": "Random sampling can result in the minority classes being underrepresented, which can lead to biased models that do not perform well on those classes."
+    },
+    {
+      "mcq_no": 22,
+      "topic": "Model Generalization",
+      "question": "What is the primary goal of model generalization in machine learning?",
+      "option_a": "To perform well on both training and unseen data",
+      "option_b": "To minimize training time",
+      "option_c": "To maximize the complexity of the model",
+      "option_d": "To ensure the model memorizes the training data",
+      "correct_ans": "a",
+      "explanation": "The primary goal of model generalization is to ensure that the model performs well not just on the training data but also on unseen test data, indicating its ability to generalize."
+    },
+    {
+      "mcq_no": 23,
+      "topic": "Model Generalization",
+      "question": "Which of the following is a common issue that can hinder model generalization?",
+      "option_a": "Overfitting",
+      "option_b": "Underfitting",
+      "option_c": "Data preprocessing",
+      "option_d": "Feature selection",
+      "correct_ans": "a",
+      "explanation": "Overfitting occurs when a model learns the noise in the training data rather than the underlying patterns, leading to poor generalization on new, unseen data."
+    },
+    {
+      "mcq_no": 24,
+      "topic": "Train-Dev Set",
+      "question": "What is the primary purpose of using a Train-Dev set in machine learning?",
+      "option_a": "To evaluate model performance and detect overfitting",
+      "option_b": "To increase the size of the training dataset",
+      "option_c": "To improve the speed of model training",
+      "option_d": "To reduce the complexity of the model",
+      "correct_ans": "a",
+      "explanation": "The Train-Dev set is specifically used to evaluate how well the model is performing and to identify if it is overfitting to the training data."
+    },
+    {
+      "mcq_no": 25,
+      "topic": "Train-Dev Set",
+      "question": "Which of the following indicates that a model may be overfitting when using a Train-Dev set?",
+      "option_a": "High accuracy on the Train-Dev set and low accuracy on the training set",
+      "option_b": "Similar accuracy on both the training set and the Train-Dev set",
+      "option_c": "Low accuracy on both the Train-Dev set and the training set",
+      "option_d": "High accuracy on the training set and significantly lower accuracy on the Train-Dev set",
+      "correct_ans": "d",
+      "explanation": "If the model shows high accuracy on the training set but significantly lower accuracy on the Train-Dev set, it suggests that the model is overfitting to the training data."
+    }
+  ]
+}
