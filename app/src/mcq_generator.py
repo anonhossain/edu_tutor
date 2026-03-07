@@ -27,7 +27,7 @@ PINECONE_DIMENSION       = 1536
 PINECONE_METRIC          = "cosine"
 PINECONE_CLOUD           = "aws"
 PINECONE_REGION          = "us-east-1"
-PINECONE_TOP_K           = 10                  # how many chunks to retrieve
+PINECONE_TOP_K           = 5                  # how many chunks to retrieve
 
 # Embedding model
 EMBEDDING_MODEL          = "text-embedding-3-small"
