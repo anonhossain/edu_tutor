@@ -242,13 +242,13 @@ def curriculum_maker(output_folder: str):
                 {
                     "role": "system",
                     "content": f"""
-Choose the MOST relevant chapter number for this text.
+                        Choose the MOST relevant chapter number for this text.
 
-Chapters:
-{numbered_chapters}
+                        Chapters:
+                        {numbered_chapters}
 
-Return ONLY the chapter number.
-"""
+                        Return ONLY the chapter number.
+                        """
                 },
                 {
                     "role": "user",
@@ -358,9 +358,43 @@ def remove_index(index_name):
     except Exception as e:
         print(f"Error removing index: {e}")
 
+def run_curriculum_maker(input_folder: str, output_folder: str):
+    """
+    Full pipeline:
+    1. Extract text from PDFs
+    2. Chunk + Embed into Pinecone
+    3. Generate Curriculum JSON
+    """
+
+    print("\n========== STEP 1: Extracting Text ==========")
+
+    word_extractor(input_folder, output_folder)
+
+    # Find the generated txt file
+    txt_files = [f for f in os.listdir(output_folder) if f.endswith(".txt")]
+
+    if not txt_files:
+        raise Exception("No text file generated from PDFs.")
+
+    input_text = os.path.join(output_folder, txt_files[0])
+
+    print(f"Using extracted file: {input_text}")
+
+    print("\n========== STEP 2: Chunking + Embedding ==========")
+
+    chunk_and_embed(input_text)
+
+    print("\n========== STEP 3: Generating Curriculum ==========")
+
+    curriculum_maker(output_folder)
+
+    print("\n========== PIPELINE COMPLETED ==========")
+
 
 if __name__ == "__main__":
-
+    input_folder = "app/files"
+    output_folder = "app/output"
+    run_curriculum_maker(input_folder, output_folder)
 
     index_name = "course-curriculum"
     dimension = 1536
@@ -378,13 +412,11 @@ if __name__ == "__main__":
     
     # Word Extractor
 
-    
-
-    # word_extractor(input_folder, output_folder)
+    #word_extractor(input_folder, output_folder)
 
     # Chunking and Embedding
   
-    chunk_and_embed(input_text)
+    #chunk_and_embed(input_text)
 
     # Curriculum Maker
     # curriculum = curriculum_maker()
