@@ -8,6 +8,7 @@ from pinecone import Pinecone, ServerlessSpec
 from elevenlabs import ElevenLabs
 from pathlib import Path
 import requests
+import json
 
 load_dotenv()
 
@@ -41,6 +42,22 @@ VOICE_INSTRUCTIONS = "Speak clearly in a helpful assistant tone."
 #TRANSCRIPTION_MODEL="scribe_v1"
 TRANSCRIPTION_MODEL="whisper-1"
 URL_SPEECH_TO_TEXT="https://api.elevenlabs.io/v1/speech-to-text"
+
+CHATBOT_TEMPERATURE = 0.25
+CHATBOT_MAX_TOKENS = 200
+CHATBOT_PROMPT = """
+You are a helpful assistant that answers questions using the provided context
+and conversation history.
+
+Rules:
+- Use the retrieved context as the main source of factual information.
+- You may also use the conversation history to understand previous questions.
+- If the user asks about previous conversation, answer using the chat history.
+- If the answer is not found in either the context or chat history, respond with:
+"The information is out of my knowledge base."
+"""
+
+CHAT_HISTORY_FILE = "chat_history.json"
 
 # ────────────────────────────────────────────────
 # Helpers
@@ -139,44 +156,47 @@ def transcribe(input_file: str) -> str:
     )
     return transcript
 
-# voice_id = "pNInz6obpgDQGcFmaJgB"
+def load_chat_history(history_file):
 
-# def text_to_speech(text: str, output_file: str) -> bytes:
-#     """
-#     Convert text to speech and save it as an mp3 file.
-#     """
+    if not os.path.exists(history_file):
+        return []
 
-#     client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+    with open(history_file, "r") as f:
+        data = json.load(f)
 
-#     response_stream = client.text_to_speech.convert(
-#         voice_id=voice_id,
-#         model_id="eleven_multilingual_v2",
-#         text=text,
-#         output_format="mp3_44100_128",
-#         voice_settings={
-#             "stability": 0.5,
-#             "similarity_boost": 0.9,
-#             "style": 1.0,
-#             "speed": 0.75,
-#             "use_speaker_boost": True
-#         }
-#     )
+    return data.get("conversation", [])
 
-#     audio_chunks = []
+def save_chat_history(user_query, bot_response, history_file):
 
-#     for chunk in response_stream:
-#         if chunk:
-#             audio_chunks.append(chunk)
+    history = load_chat_history(history_file)
 
-#     audio_bytes = b"".join(audio_chunks)
+    history.append({
+        "user": user_query.strip(),
+        "assistant": bot_response.strip()
+    })
 
-#     with open(output_file, "wb") as f:
-#         f.write(audio_bytes)
+    with open(history_file, "w") as f:
+        json.dump({"conversation": history}, f, indent=2)
 
-#     print(f"Speech generation complete. Audio length: {len(audio_bytes)} bytes")
+def format_chat_history(history, limit=3):
 
-#     return audio_bytes
+    recent_history = history[-limit:]
 
+    formatted = ""
+
+    for chat in recent_history:
+        formatted += f"User: {chat['user']}\n"
+        formatted += f"Assistant: {chat['assistant']}\n\n"
+
+    return formatted
+
+def build_prompt_context(chunks, history):
+
+    context = "\n\n".join(chunks)
+
+    history_text = format_chat_history(history)
+
+    return history_text, context
 
 def text_to_speech(text: str, output_file: str) -> bytes:
     """
@@ -228,38 +248,57 @@ def build_context(chunks: list[str]) -> str:
 
 import requests
 
-def generate_llm_response(query: str, context: str) -> str:
-    """
-    Generate response from LLM using context and user query.
-    """
+# def generate_llm_response(query: str, context: str) -> str:
+#     """
+#     Generate response from LLM using context and user query.
+#     """
+
+#     resp = client.chat.completions.create(
+#         model=GENERATION_MODEL,
+#         messages=[
+#             {
+#                 "role": "system",
+#                 "content": CHATBOT_PROMPT
+#             },
+#             {
+#                 "role": "user",
+#                 "content": f"""
+#                     Context:
+#                     {context}
+
+#                     Question:
+#                     {query}
+
+#                     Answer:
+#                     """
+#             }
+#         ],
+#         temperature=CHATBOT_TEMPERATURE,
+#         max_tokens=CHATBOT_MAX_TOKENS
+#     )
+
+#     content = resp.choices[0].message.content.strip()
+#     return content
+
+def generate_llm_response(query: str, context: str, history: str) -> str:
 
     resp = client.chat.completions.create(
         model=GENERATION_MODEL,
         messages=[
-            {
-                "role": "system",
-                "content": "Answer questions using the provided context. "
-                "If the answer is not in the context, say: The informaition is out of my knowledge base."
-            },
-            {
-                "role": "user",
-                "content": f"""
-                    Context:
-                    {context}
+    {"role": "system", "content": CHATBOT_PROMPT},
 
-                    Question:
-                    {query}
+    {"role": "system", "content": f"Conversation History:\n{history}"},
 
-                    Answer:
-                    """
-            }
-        ],
-        temperature=0.25,
-        max_tokens=300
+    {"role": "system", "content": f"Context:\n{context}"},
+
+    {"role": "user", "content": query}
+],
+        temperature=CHATBOT_TEMPERATURE,
+        max_tokens=CHATBOT_MAX_TOKENS
     )
 
-    content = resp.choices[0].message.content.strip()
-    return content
+    return resp.choices[0].message.content.strip()
+
 
 def delete_vectors_by_filter(pdf_name: str = None, pdf_id: str = None) -> None:
     index = pc.Index(PINECONE_INDEX_NAME)
@@ -288,6 +327,8 @@ def add_pdf_to_knowledge_base(input_file: str) -> None:
     text = word_extractor(input_file)
     create_pinecone_index()
     chunk_and_embed(text, pdf_name, pdf_id)
+    print (f"PDF '{pdf_name}' added to knowledge base with ID: {pdf_id}")
+    return pdf_id, pdf_name
 
 # def chat_with_pdf(input_file: str) -> str:
 #     query = transcribe(input_file)
@@ -298,17 +339,58 @@ def add_pdf_to_knowledge_base(input_file: str) -> None:
 #     return response
 
 
-def chat_with_pdf(input_file: str):
+# def talk_with_pdf(input_audio: str):
 
-    query = transcribe(input_file)
+#     query = transcribe(input_audio)
 
+#     chunks = embed_and_search_chunks(query)
+
+#     context = build_context(chunks)
+
+#     text = generate_llm_response(query, context)
+
+#     audio = text_to_speech(text, "response.mp3")
+
+#     print(f"Chatbot Response: {text}")
+#     return audio, text
+
+
+import os
+
+def talk_with_pdf(input_audio: str, output_dir: str):
+
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Define output file paths
+    audio_output_path = os.path.join(output_dir, "response.mp3")
+    history_file = os.path.join(output_dir, "chat_history.json")
+
+    # Transcribe user audio
+    query = transcribe(input_audio)
+
+    # Load chat history
+    history = load_chat_history(history_file)
+
+    # Retrieve relevant chunks
     chunks = embed_and_search_chunks(query)
 
+    # Build context
     context = build_context(chunks)
 
-    text = generate_llm_response(query, context)
+    # Format history
+    history_text = format_chat_history(history)
 
-    audio = text_to_speech(text, "response.mp3")
+    # Generate response
+    text = generate_llm_response(query, context, history_text)
+
+    # Convert to speech
+    audio = text_to_speech(text, audio_output_path)
+
+    # Save history
+    save_chat_history(query, text, history_file)
+
+    print(f"Chatbot Response: {text}")
 
     return audio, text
 
@@ -329,8 +411,9 @@ if __name__ == "__main__":
     # response = chat_with_pdf(input_files)
     # print(f"Chatbot Response: {response}")
 
-    input_files = r"..\files\Recording.mp3"
-    response = chat_with_pdf(input_files)
+    input_audio = r"C:\files\scott\app\files\Django.mp3"
+    output_dir = r"C:\files\scott\app\output"
+    response = talk_with_pdf(input_audio, output_dir)
     print(f"Chatbot Response generated and saved.")
 
     # transcription = "What is Base Template in Django?"
@@ -344,6 +427,6 @@ if __name__ == "__main__":
     # print(f"Chatbot Response: {response}")
 
     # pdf_name = "Notes2.pdf"
-    # pdf_id = "dd4533b3-4e72-4d43-9f22-73e8bad8066a"
+    # pdf_id = "4e570231-ad55-4c66-9496-27eedd52ba3c"
     # delete_pdf_from_knowledge_base(pdf_name=pdf_name, pdf_id=pdf_id)
     # print(f"Deleted PDF from knowledge base: {pdf_name} (ID: {pdf_id})")
