@@ -7,6 +7,22 @@
     {
       "user": "Can you tell me about Django framework?",
       "assistant": "Django is a free, open-source web framework written in the Python programming language. It is designed to simplify web development by providing a collection of modular tools that abstract away much of the difficulty and repetition inherent in building web applications. Django is known for its robustness and flexibility, making it suitable for both large-scale websites (like Instagram and Pinterest) and for early-stage startups or personal projects.\n\nDjango has been under active development for over 13 years as of 2018 and has a large community of developers who contribute to its ongoing improvement. It is user-friendly for both beginners and advanced programmers, allowing for the creation of complex applications with modern best practices, including thorough testing.\n\nThe framework encourages the use of reusable components and follows the \"Don't Repeat Yourself\" (DRY) principle, which helps reduce code duplication and potential errors. Django is regularly updated, and the book referenced in the context uses the latest versions of Django (2.1) and Python (3.7x), along with"
+    },
+    {
+      "user": "Can you tell me about Django framework?",
+      "assistant": "Django is a free, open-source web framework written in the Python programming language. It is designed to simplify web development by providing a collection of modular tools that abstract away much of the difficulty and repetition inherent in building web applications. Django is known for its robustness and flexibility, making it suitable for both large-scale websites (like Instagram and Pinterest) and for early-stage startups or personal projects.\n\nDjango has been under active development for over 13 years as of 2018 and has a large community of developers who contribute to its ongoing improvement. It is user-friendly for both beginners and advanced programmers, allowing for the creation of complex applications with modern best practices, including thorough testing.\n\nThe framework encourages the use of reusable components and follows the \"Don't Repeat Yourself\" (DRY) principle, which helps reduce code duplication and potential errors. Django is regularly updated, and the book referenced in the context uses the latest versions of Django (2.1) and Python (3.7x)."
+    },
+    {
+      "user": "Can you tell me about Django framework?",
+      "assistant": "Django is a free, open-source web framework written in the Python programming language. It is designed to simplify web development by providing a collection of modular tools that abstract away much of the difficulty and repetition inherent in building web applications. Django is known for its robustness and flexibility, making it suitable for both large-scale websites (like Instagram and Pinterest) and for early-stage startups or personal projects.\n\nDjango has been under active development for over 13 years as of 2018 and has a large community of developers who contribute to its ongoing improvement. It is user-friendly for both beginners and advanced programmers, allowing for the creation of complex applications with modern best practices, including thorough testing.\n\nThe framework encourages the use of reusable components and follows the \"Don't Repeat Yourself\" (DRY) principle, which helps reduce code duplication and potential errors. Django is regularly updated, and the book referenced in the context uses the latest versions of Django (2.1) and Python (3.7x)."
+    },
+    {
+      "user": "You know sometimes we imagine technology change as big things, robots, flying cars or giant prosthetic sighties, but what fascinates me the most is how technology is quietly changing the tiny habits we don't even notice anymore. Take communication for example, 10 years ago texting someone took effort, now we don't even type, we voice note everything. We don't say I will tell you later.",
+      "assistant": "The information is out of my knowledge base."
+    },
+    {
+      "user": "Okay, what did I asked in my last conversation or last question",
+      "assistant": "In your last question, you mentioned how technology is changing small habits that we might not notice, specifically referencing how communication has evolved from texting to using voice notes. You also noted that we no longer say \"I will tell you later.\""
     }
   ]
 }
